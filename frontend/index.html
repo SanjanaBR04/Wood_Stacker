@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Slab-Stacker Pro</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    padding: 20px;
+    background: #f4f4f9;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.inputs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+input[type="number"], input[type="file"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 12px 24px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #219150;
+}
+
+canvas {
+    border: 2px solid #333;
+    margin-top: 15px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.sheet-card {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px dashed #ddd;
+}
+
+.efficiency-label {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#statusMsg {
+    margin-top: 15px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Slab-Stacker Pro</h1>
+
+<div class="inputs">
+    <label>Plywood Width (cm):
+        <input type="number" id="pWidth" value="244">
+    </label>
+
+    <label>Plywood Height (cm):
+        <input type="number" id="pHeight" value="122">
+    </label>
+
+    <input type="file" id="csvInput" accept=".csv" multiple>
+
+    <button type="button" onclick="processCuts()">Generate All Sheets</button>
+
+</div>
+
+<div id="statusMsg"></div>
+<div id="sheetsContainer"></div>
+
+</div>
+
+<script src="canvas_mapper.js"></script>
+
+<script>
+async function processCuts() {
+    const fileInput = document.getElementById('csvInput');
+    const sWidth = document.getElementById('pWidth').value;
+    const sHeight = document.getElementById('pHeight').value;
+    const sheetsContainer = document.getElementById('sheetsContainer');
+    const statusMsg = document.getElementById('statusMsg');
+
+    sheetsContainer.innerHTML = "";
+    statusMsg.style.color = "black";
+
+    if (!fileInput.files.length) {
+        statusMsg.style.color = "red";
+        statusMsg.textContent = "Please select CSV files first.";
+        return;
+    }
+
+    statusMsg.textContent = "Calculating optimal layout...";
+
+    const formData = new FormData();
+
+    for (const file of fileInput.files) {
+        formData.append("files", file);
+    }
+
+    formData.append("sheetWidth", String(sWidth));
+    formData.append("sheetHeight", String(sHeight));
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/calculate", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("Server returned status " + response.status);
+        }
+
+        const data = await response.json();
+
+        // ✅ SAFETY CHECK
+        if (!data.groups || data.groups.length === 0) {
+            statusMsg.style.color = "orange";
+            statusMsg.textContent = "No layout groups returned from server.";
+            return;
+        }
+
+        statusMsg.textContent = "Layout generated successfully.";
+
+        data.groups.forEach(group => {
+
+            const thicknessHeader = document.createElement('h2');
+            thicknessHeader.textContent = `Thickness: ${group.thickness} mm`;
+            thicknessHeader.style.marginTop = "30px";
+            thicknessHeader.style.color = "#2c3e50";
+            sheetsContainer.appendChild(thicknessHeader);
+
+            group.result.sheets.forEach((sheet, index) => {
+
+                const sheetDiv = document.createElement('div');
+                sheetDiv.className = 'sheet-card';
+
+                sheetDiv.innerHTML = `
+                    <h3>Plywood Sheet #${index + 1}
+                    <span class="efficiency-label"> - Efficiency: ${sheet.efficiency}%</span></h3>
+                `;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = sWidth * 4;
+                canvas.height = sHeight * 4;
+
+                sheetDiv.appendChild(canvas);
+                sheetsContainer.appendChild(sheetDiv);
+
+                drawSheet(canvas, sheet.parts);
+            });
+        });
+
+    } catch (err) {
+        console.error(err);
+        statusMsg.style.color = "red";
+        statusMsg.textContent = "Error: " + err.message;
+    }
+}
+</script>
