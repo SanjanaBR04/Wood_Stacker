@@ -10,25 +10,49 @@ function drawSheet(canvas, parts) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     parts.forEach(p => {
+        const px = p.x * scale;
+        const py = p.y * scale;
+        const pw = p.w * scale;
+        const ph = p.h * scale;
+
+        // Draw the slab
         ctx.fillStyle = "#d2b48c";
-        ctx.fillRect(p.x * scale, p.y * scale, p.w * scale, p.h * scale);
+        ctx.fillRect(px, py, pw, ph);
 
         ctx.strokeStyle = "#5d4037";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(p.x * scale, p.y * scale, p.w * scale, p.h * scale);
+        ctx.strokeRect(px, py, pw, ph);
 
+        // Calculate center for text
+        const centerX = px + (pw / 2);
+        const centerY = py + (ph / 2);
+
+        ctx.save();
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-        const centerX = (p.x * scale) + (p.w * scale / 2);
-        const centerY = (p.y * scale) + (p.h * scale / 2);
+        // Logic: If the slab is very narrow (width < 40px) and tall, rotate text
+        const shouldRotate = pw < 40 && ph > pw;
 
-        if (p.w * scale > 50 && p.h * scale > 30) {
-            ctx.font = "bold 11px Arial";
-            ctx.fillText(p.label, centerX, centerY - 5);
+        if (shouldRotate) {
+            ctx.translate(centerX, centerY);
+            ctx.rotate(-Math.PI / 2); // Rotate 90 degrees counter-clockwise
+            
+            ctx.font = "bold 10px Arial";
+            ctx.fillText(p.label, 0, -6);
+            
+            ctx.font = "9px Arial";
+            ctx.fillText(p.dims + " cm", 0, 8);
+        } else {
+            if (pw > 20 && ph > 15) {
+                ctx.font = "bold 11px Arial";
+                ctx.fillText(p.label, centerX, centerY - 5);
 
-            ctx.font = "10px Arial";
-            ctx.fillText(p.dims + " cm", centerX, centerY + 10);
+                ctx.font = "10px Arial";
+                ctx.fillText(p.dims + " cm", centerX, centerY + 10);
+            }
         }
+        ctx.restore();
     });
 }

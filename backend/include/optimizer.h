@@ -10,6 +10,7 @@ struct Panel {
     std::string label;
     std::string dims;
     double thickness;
+    bool rotated = false;
 };
 
 struct Rect {

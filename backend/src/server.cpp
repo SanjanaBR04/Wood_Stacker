@@ -49,6 +49,7 @@ std::string buildJSON(const std::vector<Sheet>& sheets)
                << "\"w\":" << p.w << ","
                << "\"h\":" << p.h << ","
                << "\"label\":\"" << jsonEscape(p.label) << "\","
+               << "\"rotated\":" << (p.rotated ? "true" : "false") << ","
                << "\"dims\":\"" << jsonEscape(p.dims) << "\""
                << "}";
 
