@@ -1,0 +1,3 @@
+C:/Users/Ramprasad/Downloads/cpp Wood stacker/backend/build/CMakeFiles/optimizer_server.dir
+C:/Users/Ramprasad/Downloads/cpp Wood stacker/backend/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Ramprasad/Downloads/cpp Wood stacker/backend/build/CMakeFiles/ZERO_CHECK.dir

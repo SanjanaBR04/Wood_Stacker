@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Ramprasad\Downloads\cpp Wood stacker\backend\build\CMakeFiles\2888805d4e459ce5ea3958776cee4080\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{819EE387-832C-3AF3-8AE1-A713528F3EA7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

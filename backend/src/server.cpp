@@ -121,7 +121,7 @@ int main()
             allPanels.insert(allPanels.end(), panels.begin(), panels.end());
         }
 
-        // -------- GROUP BY THICKNESS --------
+        // Group by thickness
         std::map<double, std::vector<Panel>> grouped;
 
         for (const auto& p : allPanels)

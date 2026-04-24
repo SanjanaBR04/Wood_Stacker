@@ -1,0 +1,10 @@
+^C:\USERS\RAMPRASAD\DOWNLOADS\CPP WOOD STACKER\BACKEND\BUILD\CMAKEFILES\2888805D4E459CE5EA3958776CEE4080\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Ramprasad/Downloads/cpp Wood stacker/backend" "-BC:/Users/Ramprasad/Downloads/cpp Wood stacker/backend/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/Ramprasad/Downloads/cpp Wood stacker/backend/build/slab_optimizer_server.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
